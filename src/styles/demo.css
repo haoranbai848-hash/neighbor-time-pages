@@ -1,0 +1,32 @@
+/* Only static-demo feedback and supporting layouts; V1 visual rules stay in v1/. */
+html { scroll-behavior: smooth; }
+body.course-app.nh-experience .demo-notice { padding: 7px 20px; text-align:center; font-size:13px; color:#52654c; background:#eeefe5; border-bottom:1px solid #dde3d5; }
+button,input,select,textarea { font:inherit; }
+button { cursor:pointer; }
+.demo-page-heading { padding:30px 0 12px; }
+.demo-page-heading > p:last-child { max-width:850px; color:var(--nh-muted); }
+.demo-page-section { margin:36px 0; }
+.demo-account-actions { display:flex; flex-direction:column; justify-content:center; gap:16px; align-items:flex-start; }
+.demo-ledger { margin-top:28px; }
+.demo-actions { display:flex; align-items:center; flex-wrap:wrap; gap:16px; margin:20px 0; }
+.demo-table-scroll { max-width:100%; overflow-x:auto; }
+.demo-table-scroll table { width:100%; }
+.demo-table-scroll caption { caption-side:bottom; white-space:normal; }
+.demo-form { max-width:850px; margin:0 auto 40px; }
+.demo-field { margin-bottom:22px; min-width:0; }
+.demo-field label { display:block; margin-bottom:7px; }
+.demo-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.demo-checkbox { display:flex; align-items:flex-start; gap:12px; margin:0 0 24px; }
+.demo-checkbox input { width:20px; height:20px; margin-top:5px; flex-shrink:0; }
+.demo-feedback { padding:20px; border:1px solid #96ae97; border-radius:12px; background:#e4eedc; margin:24px 0 0; overflow-wrap:anywhere; }
+.demo-feedback > p { margin:10px 0 0; }
+.demo-form-note { color:var(--nh-muted); margin:22px 0 0; }
+.demo-dialog { max-width:min(540px,calc(100vw - 32px)); padding:30px; border:1px solid #96ae97; border-radius:18px; background:#fffefa; color:#264b3b; }
+.demo-dialog::backdrop { background:rgba(20,40,30,.45); }
+.demo-dialog h2 { font-size:26px; }
+.demo-pagination { display:flex; justify-content:center; gap:12px; margin:30px 0; }
+.demo-pagination a { padding:8px 18px; border:1px solid #96ae97; border-radius:10px; text-decoration:none; }
+.demo-pagination a[aria-current=page] { color:white; background:var(--nh-green); }
+.demo-print-action { margin:20px 0; }
+@media(max-width:600px) { .demo-form-grid { grid-template-columns:1fr; gap:0; } .demo-form { padding:22px!important; } .demo-actions { align-items:stretch; flex-direction:column; } .demo-table-scroll { font-size:14px; } }
+@media print { .demo-notice,.nh-header,.nh-footer,.demo-print-action { display:none!important; } }

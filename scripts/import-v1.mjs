@@ -1,0 +1,44 @@
+// One-time, read-only import from the local Rails source. NOT part of the build.
+import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+const demo = path.resolve(import.meta.dirname, '..');
+const rails = path.resolve(demo, '..');
+const read = p => fs.readFileSync(path.join(rails, p), 'utf8');
+const write = (p, content) => { const dest = path.join(demo, p); fs.mkdirSync(path.dirname(dest), {recursive:true}); fs.writeFileSync(dest, content); };
+const copy = (from, to) => { const dest = path.join(demo, to); fs.mkdirSync(path.dirname(dest), {recursive:true}); fs.copyFileSync(path.join(rails, from), dest); };
+const originalFiles = execFileSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], {cwd:rails}).toString().split('\0').filter(p => p && !p.startsWith('cloudflare-demo/'));
+write('docs/original-file-hashes.json', JSON.stringify(Object.fromEntries(originalFiles.filter(p=>fs.existsSync(path.join(rails,p))).map(p=>[p,createHash('sha256').update(fs.readFileSync(path.join(rails,p))).digest('hex')])),null,2));
+write('docs/original-git-status.txt', execFileSync('git',['status','--short'],{cwd:rails}).toString());
+for (const name of ['_course.scss','_course_home.scss','_course_marketplace.scss','_course_post.scss']) copy(`app/assets/stylesheets/application/${name}`, `src/styles/v1/${name}`);
+for (const name of ['neighborhood-community-people.png','neighborhood-home-garden.webp','course-avatar.svg']) copy(`app/assets/images/${name}`,`public/images/${name}`);
+copy('public/favicon.ico', 'public/favicon.ico');
+copy('LICENSE', 'LICENSE'); copy('LICENSE','public/LICENSE.txt');
+// Copy the existing SVG paths verbatim; no external icon or font requests.
+const iconSource = read('app/views/course/_home_icon.html.erb');
+const icons = Object.fromEntries([...iconSource.matchAll(/<% when '([^']+)' %>([\s\S]*?)(?=<%)/g)].map(m=>[m[1],m[2].trim()]));
+write('src/icons.json', JSON.stringify(icons,null,2));
+const icon = name => `<svg class="nh-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;
+let home = read('app/views/course/_home.html.erb');
+home = home.replace(/  <% if @course_member %>[\s\S]*?  <% end %>/,'');
+// Remove any remaining conditional section up to the marketplace block.
+home = home.replace(/\s*<% elsif current_user %>[\s\S]*?<% end %>/,'');
+home = home.replace(/<%= image_tag 'neighborhood-community-people.png'[^%]*%>/, '<img src="/images/neighborhood-community-people.png" width="1536" height="1024" alt="青年陪长者学习手机，邻居分享花卉，志愿者与孩子一起传递社区温暖" fetchpriority="high">');
+home = home.replace(/<%= render 'course\/home_icon', name: '([^']+)' %>/g, (_,n)=>icon(n));
+home = home.replace(/<%= link_to new_offer_path, class: '([^']+)' do %>/g, '<a href="/offers/new" class="$1">');
+home = home.replace(/<%= link_to offers_path, class: '([^']+)' do %>/g, '<a href="/offers" class="$1">');
+home = home.replace(/<%= link_to course_guide_path, class: '([^']+)' do %>/g, '<a href="/course/guide" class="$1">');
+home = home.replace(/<%= link_to course_guide_path\(anchor: 'offline-card'\), class: '([^']+)' do %>/g, '<a href="/course/guide#offline-card" class="$1">');
+home = home.replace(/<%= link_to '第一次来？了解如何参与', course_guide_path %>/g, '<a href="/course/guide">第一次来？了解如何参与</a>');
+home = home.replace(/<%= link_to\(@course_member[^%]+%>/, '<a href="/timebank" class="nh-button nh-bank-link">');
+home = home.replace(/<%= @course_member[^%]+%>/, '查看演示时间账本');
+home = home.replace(/<% end %>/g,'</a>');
+if (home.includes('<%')) throw new Error('Unconverted home ERB');
+write('src/content/home.html',home);
+let guide = read('app/views/course_guides/show.html.erb');
+guide = guide.replace('页面中的互助内容、成员和时间余额来自实际数据库。','页面中的互助内容、成员和时间余额均为本地模拟数据，不连接数据库。');
+guide = guide.replace(/<%= link_to '浏览可以提供的帮助 →', offers_path %>/, '<a href="/offers">浏览可以提供的帮助 →</a>');
+if (guide.includes('<%')) throw new Error('Unconverted guide ERB');
+write('src/content/guide.html', guide);
+console.log(`Imported current V1 styles, icons, home, guide, selected assets and license; fingerprinted ${originalFiles.length} original files. No database access.`);

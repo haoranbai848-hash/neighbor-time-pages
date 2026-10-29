@@ -1,0 +1,29 @@
+ M app/assets/stylesheets/application.scss
+ M app/assets/stylesheets/application/_course_home.scss
+ M app/controllers/home_controller.rb
+ M app/controllers/posts_controller.rb
+ M app/helpers/course_helper.rb
+ M app/views/application/_footer.html.erb
+ M app/views/application/_navbar.html.erb
+ M app/views/course/_home.html.erb
+ M app/views/course/_home_footer.html.erb
+ M app/views/course/_home_icon.html.erb
+ M app/views/course/_home_navbar.html.erb
+ M app/views/course/_post.html.erb
+ M app/views/course/_post_index.html.erb
+ M app/views/course/_posts.html.erb
+ M app/views/inquiries/show.html.erb
+ M app/views/layouts/application.html.erb
+ M app/views/offers/show.html.erb
+ M app/views/shared/_post_actions.html.erb
+ M spec/requests/course_experience_spec.rb
+ M spec/requests/course_homepage_spec.rb
+?? app/assets/images/neighborhood-community-people.png
+?? app/assets/stylesheets/application/_course_marketplace.scss
+?? app/assets/stylesheets/application/_course_post.scss
+?? app/presenters/
+?? app/views/course/_marketplace_categories.html.erb
+?? cloudflare-demo/
+?? spec/presenters/
+?? spec/requests/course_marketplace_spec.rb
+?? spec/requests/course_unified_experience_spec.rb
